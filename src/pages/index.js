@@ -16,7 +16,7 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import Dashboard from "./dashboard/index";
+import Dashboard from "./components/dashboard/index";
 import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
