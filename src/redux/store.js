@@ -3,12 +3,14 @@
 // src/redux/store.js
 import { configureStore } from "@reduxjs/toolkit";
 
-import exampleReducer from "./reducers/exaple-slice";
+import exampleSlice from "./reducers/exaple-slice";
+import userSlice from "./reducers/userSlice";
 
 const store = configureStore({
   reducer: {
     // Our reducers go here
-    example: exampleReducer,
+    example: exampleSlice,
+    user: userSlice,
   },
 });
 

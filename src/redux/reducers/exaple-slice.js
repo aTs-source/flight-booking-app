@@ -12,3 +12,4 @@ const exampleSlice = createSlice({
 });
 
 export const { actions, reducer } = exampleSlice;
+export default exampleSlice;
