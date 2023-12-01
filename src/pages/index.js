@@ -1,3 +1,10 @@
+/**
+ * Flight Booking App.
+ * Node Version 20.7.9.
+ * React Version 18
+ * Next Version 14.0.3
+ */
+
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
