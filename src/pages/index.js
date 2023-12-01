@@ -4,6 +4,7 @@
  * React Version 18
  * Next Version 14.0.3
  */
+"use client";
 
 import Head from "next/head";
 import Image from "next/image";
