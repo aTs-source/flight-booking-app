@@ -9,6 +9,7 @@ const userSlice = createSlice({
   },
   reducers: {
     login: (state, action) => {
+      // console.log("login in redux", state, action.payload);
       state.currentUser = action.payload;
       state.isAuthenticated = true;
     },

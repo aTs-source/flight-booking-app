@@ -7,7 +7,7 @@ const ErrorPage = ({ statusCode }) => {
     if (typeof window !== "undefined") {
       // Redirect to the index page after a short delay (e.g., 3 seconds)
       const redirectTimeout = setTimeout(() => {
-        Router.replace("/");
+        Router.replace("/search-flight");
       }, 2000);
 
       // Clear the timeout to prevent the redirection if the component is unmounted

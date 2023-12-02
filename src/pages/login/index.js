@@ -12,17 +12,70 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { headers } from "../../../next.config";
+import axios from "axios";
+import SecretKey from "../../constants/secret-key";
+import { decryptData, encryptData } from "@/utilities/crypto";
+import { useDispatch } from "react-redux";
+import { login } from "@/redux/reducers/userSlice";
+import { useRouter } from "next/router";
 
-const defaultTheme = createTheme();
+const defaultTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    let response;
+    let encryptedData;
+    try {
+      encryptedData = await encryptData(
+        JSON.stringify({
+          email: data.get("email"),
+          password: data.get("password"),
+        })
+      );
+    } catch (error) {
+      console.log("Error to encrypt data", error);
+      return;
+    } finally {
+      try {
+        const loginURL = "https://devadmin.altabooking.com/api/v2/auth/login";
+        response = await axios.post(
+          loginURL,
+          {
+            request_data: encryptedData,
+          },
+          {
+            headers: {
+              apikey: "indusAltaR2PSM",
+              currency:
+                "U2FsdGVkX1/O0sFe9FnokQdTBRP/rRIlcPZEWbzHL9ncZwZzp/Fu/2Jnt0z8ukCALQNDRknKwa5WdmjDRC2XA2a0gz/ZfvHeYTIq7fBZi9P4kQ7KvQYueLB2Rl4puqOTSQyBsbLGPc8cQ9KDZLMVapCruTsJcGzRnaOo1CZksLPMzmNOPqe+ePZk6UJiAUmoDS6p4JvLCmpe0RATiqDh7g==",
+            },
+          }
+        );
+      } catch (error) {
+        console.log("\n\nError occured to login\n Error: -++>>", error);
+      } finally {
+        // console.log("\nLogin response", response?.data?.response_data);
+        try {
+          response = await decryptData(response?.data?.response_data);
+        } catch (error) {
+          console.log("\nError occured to decrypt data", error);
+        } finally {
+          response = JSON.parse(response);
+          dispatch(login(response?.data));
+          router.replace("/search-flight");
+        }
+      }
+    }
   };
 
   return (

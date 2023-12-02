@@ -5,10 +5,10 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 
 const ProtectedRoute = ({ children }) => {
-  const currentUser = useSelector((state) => state.user.currentUser);
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   const router = useRouter();
 
-  if (!currentUser) {
+  if (!isAuthenticated) {
     router.replace("/login");
     console.log("route to login");
     return null;
