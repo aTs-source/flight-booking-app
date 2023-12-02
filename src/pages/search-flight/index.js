@@ -14,7 +14,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Popover from "@mui/material/Popover";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -30,8 +29,18 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
+
+import dayjs from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/reducers/userSlice";
@@ -42,146 +51,74 @@ import Grid from "@mui/material/Grid";
 import axios from "axios";
 import { decryptData, encryptData } from "@/utilities/crypto";
 import ProtectedRoute from "../components/ProtectedRoute";
+import { storeFlights } from "@/redux/reducers/flightSlice";
 
-const top100Films = [
-  { title: "The Shawshank Redemption", year: 1994 },
-  { title: "The Godfather", year: 1972 },
-  { title: "The Godfather: Part II", year: 1974 },
-  { title: "The Dark Knight", year: 2008 },
-  { title: "12 Angry Men", year: 1957 },
-  { title: "Schindler's List", year: 1993 },
-  { title: "Pulp Fiction", year: 1994 },
-  {
-    title: "The Lord of the Rings: The Return of the King",
-    year: 2003,
-  },
-  { title: "The Good, the Bad and the Ugly", year: 1966 },
-  { title: "Fight Club", year: 1999 },
-  {
-    title: "The Lord of the Rings: The Fellowship of the Ring",
-    year: 2001,
-  },
-  {
-    title: "Star Wars: Episode V - The Empire Strikes Back",
-    year: 1980,
-  },
-  { title: "Forrest Gump", year: 1994 },
-  { title: "Inception", year: 2010 },
-  {
-    title: "The Lord of the Rings: The Two Towers",
-    year: 2002,
-  },
-  { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
-  { title: "Goodfellas", year: 1990 },
-  { title: "The Matrix", year: 1999 },
-  { title: "Seven Samurai", year: 1954 },
-  {
-    title: "Star Wars: Episode IV - A New Hope",
-    year: 1977,
-  },
-  { title: "City of God", year: 2002 },
-  { title: "Se7en", year: 1995 },
-  { title: "The Silence of the Lambs", year: 1991 },
-  { title: "It's a Wonderful Life", year: 1946 },
-  { title: "Life Is Beautiful", year: 1997 },
-  { title: "The Usual Suspects", year: 1995 },
-  { title: "Léon: The Professional", year: 1994 },
-  { title: "Spirited Away", year: 2001 },
-  { title: "Saving Private Ryan", year: 1998 },
-  { title: "Once Upon a Time in the West", year: 1968 },
-  { title: "American History X", year: 1998 },
-  { title: "Interstellar", year: 2014 },
-  { title: "Casablanca", year: 1942 },
-  { title: "City Lights", year: 1931 },
-  { title: "Psycho", year: 1960 },
-  { title: "The Green Mile", year: 1999 },
-  { title: "The Intouchables", year: 2011 },
-  { title: "Modern Times", year: 1936 },
-  { title: "Raiders of the Lost Ark", year: 1981 },
-  { title: "Rear Window", year: 1954 },
-  { title: "The Pianist", year: 2002 },
-  { title: "The Departed", year: 2006 },
-  { title: "Terminator 2: Judgment Day", year: 1991 },
-  { title: "Back to the Future", year: 1985 },
-  { title: "Whiplash", year: 2014 },
-  { title: "Gladiator", year: 2000 },
-  { title: "Memento", year: 2000 },
-  { title: "The Prestige", year: 2006 },
-  { title: "The Lion King", year: 1994 },
-  { title: "Apocalypse Now", year: 1979 },
-  { title: "Alien", year: 1979 },
-  { title: "Sunset Boulevard", year: 1950 },
-  {
-    title:
-      "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-    year: 1964,
-  },
-  { title: "The Great Dictator", year: 1940 },
-  { title: "Cinema Paradiso", year: 1988 },
-  { title: "The Lives of Others", year: 2006 },
-  { title: "Grave of the Fireflies", year: 1988 },
-  { title: "Paths of Glory", year: 1957 },
-  { title: "Django Unchained", year: 2012 },
-  { title: "The Shining", year: 1980 },
-  { title: "WALL·E", year: 2008 },
-  { title: "American Beauty", year: 1999 },
-  { title: "The Dark Knight Rises", year: 2012 },
-  { title: "Princess Mononoke", year: 1997 },
-  { title: "Aliens", year: 1986 },
-  { title: "Oldboy", year: 2003 },
-  { title: "Once Upon a Time in America", year: 1984 },
-  { title: "Witness for the Prosecution", year: 1957 },
-  { title: "Das Boot", year: 1981 },
-  { title: "Citizen Kane", year: 1941 },
-  { title: "North by Northwest", year: 1959 },
-  { title: "Vertigo", year: 1958 },
-  {
-    title: "Star Wars: Episode VI - Return of the Jedi",
-    year: 1983,
-  },
-  { title: "Reservoir Dogs", year: 1992 },
-  { title: "Braveheart", year: 1995 },
-  { title: "M", year: 1931 },
-  { title: "Requiem for a Dream", year: 2000 },
-  { title: "Amélie", year: 2001 },
-  { title: "A Clockwork Orange", year: 1971 },
-  { title: "Like Stars on Earth", year: 2007 },
-  { title: "Taxi Driver", year: 1976 },
-  { title: "Lawrence of Arabia", year: 1962 },
-  { title: "Double Indemnity", year: 1944 },
-  {
-    title: "Eternal Sunshine of the Spotless Mind",
-    year: 2004,
-  },
-  { title: "Amadeus", year: 1984 },
-  { title: "To Kill a Mockingbird", year: 1962 },
-  { title: "Toy Story 3", year: 2010 },
-  { title: "Logan", year: 2017 },
-  { title: "Full Metal Jacket", year: 1987 },
-  { title: "Dangal", year: 2016 },
-  { title: "The Sting", year: 1973 },
-  { title: "2001: A Space Odyssey", year: 1968 },
-  { title: "Singin' in the Rain", year: 1952 },
-  { title: "Toy Story", year: 1995 },
-  { title: "Bicycle Thieves", year: 1948 },
-  { title: "The Kid", year: 1921 },
-  { title: "Inglourious Basterds", year: 2009 },
-  { title: "Snatch", year: 2000 },
-  { title: "3 Idiots", year: 2009 },
-  { title: "Monty Python and the Holy Grail", year: 1975 },
+const airports = [
+  { name: "John F. Kennedy International Airport", iata: "JFK" },
+  { name: "Los Angeles International Airport", iata: "LAX" },
+  { name: "Heathrow Airport", iata: "LHR" },
+  { name: "Tokyo Haneda Airport", iata: "HND" },
+  { name: "Dubai International Airport", iata: "DXB" },
+  { name: "Beijing Capital International Airport", iata: "PEK" },
+  { name: "Paris Charles de Gaulle Airport", iata: "CDG" },
+  { name: "Singapore Changi Airport", iata: "SIN" },
+  { name: "O'Hare International Airport", iata: "ORD" },
+  { name: "Hong Kong International Airport", iata: "HKG" },
+  { name: "Frankfurt Airport", iata: "FRA" },
+  { name: "Denver International Airport", iata: "DEN" },
+  { name: "Sydney Airport", iata: "SYD" },
+  { name: "Incheon International Airport", iata: "ICN" },
+  { name: "Amsterdam Schiphol Airport", iata: "AMS" },
+  { name: "San Francisco International Airport", iata: "SFO" },
+  { name: "Toronto Pearson International Airport", iata: "YYZ" },
+  { name: "Munich Airport", iata: "MUC" },
+  { name: "Dallas/Fort Worth International Airport", iata: "DFW" },
+  { name: "Barcelona–El Prat Airport", iata: "BCN" },
+  { name: "Indira Gandhi International Airport", iata: "DEL" },
+  { name: "Chhatrapati Shivaji Maharaj International Airport", iata: "BOM" },
+  { name: "Kempegowda International Airport", iata: "BLR" },
+  { name: "Chennai International Airport", iata: "MAA" },
+  { name: "Netaji Subhas Chandra Bose International Airport", iata: "CCU" },
+  { name: "Rajiv Gandhi International Airport", iata: "HYD" },
+  { name: "Cochin International Airport", iata: "COK" },
+  { name: "Sardar Vallabhbhai Patel International Airport", iata: "AMD" },
+  { name: "Goa International Airport", iata: "GOI" },
+  { name: "Kochi Naval Air Station", iata: "NKL" },
+  { name: "Shahjalal International Airport", iata: "DAC" },
+  { name: "Hazrat Shah Jalal International Airport", iata: "DAC" },
+  { name: "Osmani International Airport", iata: "ZYL" },
+  { name: "Shah Amanat International Airport", iata: "CGP" },
+  { name: "Jessore Airport", iata: "JSR" },
+  { name: "Sylhet MAG Osmani International Airport", iata: "ZYL" },
+  { name: "Cox's Bazar Airport", iata: "CXB" },
+  { name: "Lalmonirhat Airport", iata: "LLJ" },
+  { name: "Rajshahi Airport", iata: "RJH" },
+  { name: "Barisal Airport", iata: "BZL" },
+  { name: "Bandaranaike International Airport", iata: "CMB" },
+  { name: "Mattala Rajapaksa International Airport", iata: "HRI" },
+  { name: "Ratmalana Airport", iata: "RML" },
 ];
+
+function DateTimePickerValue({ startDate, setStartDate }) {
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DemoContainer components={["DateTimePicker"]}>
+        <DatePicker
+          value={startDate}
+          onChange={(newValue) => {
+            console.log(newValue);
+            setStartDate(newValue);
+          }}
+        />
+      </DemoContainer>
+    </LocalizationProvider>
+  );
+}
+// console.log(airports);
 
 const drawerWidth = 240;
 const navItems = ["Cart", "Log out"];
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}
-  >
-    •
-  </Box>
-);
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
@@ -206,7 +143,17 @@ function DrawerAppBar(props) {
     infant: 0,
   });
 
-  const [loading, setLoading] = React.useState(true);
+  const [iataFrom, setIATAFrom] = React.useState(null);
+  const [iataTo, setIATATo] = React.useState(null);
+  const [depDate, setDepDate] = React.useState("YYYY-MM-DD");
+  const [startDate, setStartDate] = React.useState(dayjs(new Date()));
+  // const [loading, setLoading] = React.useState(true);
+
+  const [preferred, setPreferred] = React.useState(null);
+
+  const handleChange = (event) => {
+    setPreferred(event.target.value);
+  };
 
   const handleClick_traveller = (event, updater) => {
     updater(event.currentTarget);
@@ -257,20 +204,26 @@ function DrawerAppBar(props) {
   const getAirportsList = async () => {
     let response;
 
-    let encryptedData = await encryptData({ search_key: "CCU" });
+    let encryptedData = await encryptData({
+      search_key: "Indira Gandhi International Airport",
+    });
     console.log("encryped", encryptedData);
 
     try {
       const airportURL =
         "https://devadmin.altabooking.com/api/v2/flight/search-flight-airport";
-      response = await axios.post(airportURL, encryptedData, {
-        headers: {
-          Authorization: "Bearer " + user?.currentUser?.profile?.token,
-          apikey: "indusAltaR2PSM",
-          currency:
-            "U2FsdGVkX1/O0sFe9FnokQdTBRP/rRIlcPZEWbzHL9ncZwZzp/Fu/2Jnt0z8ukCALQNDRknKwa5WdmjDRC2XA2a0gz/ZfvHeYTIq7fBZi9P4kQ7KvQYueLB2Rl4puqOTSQyBsbLGPc8cQ9KDZLMVapCruTsJcGzRnaOo1CZksLPMzmNOPqe+ePZk6UJiAUmoDS6p4JvLCmpe0RATiqDh7g==",
-        },
-      });
+      response = await axios.post(
+        airportURL,
+        { request_data: encryptedData },
+        {
+          headers: {
+            Authorization: "Bearer " + user?.currentUser?.profile?.token,
+            apikey: "indusAltaR2PSM",
+            currency:
+              "U2FsdGVkX1/O0sFe9FnokQdTBRP/rRIlcPZEWbzHL9ncZwZzp/Fu/2Jnt0z8ukCALQNDRknKwa5WdmjDRC2XA2a0gz/ZfvHeYTIq7fBZi9P4kQ7KvQYueLB2Rl4puqOTSQyBsbLGPc8cQ9KDZLMVapCruTsJcGzRnaOo1CZksLPMzmNOPqe+ePZk6UJiAUmoDS6p4JvLCmpe0RATiqDh7g==",
+          },
+        }
+      );
     } catch (error) {
       console.log("\nError occured", error);
     } finally {
@@ -284,19 +237,8 @@ function DrawerAppBar(props) {
     }
   };
 
-  const getFilghts = async () => {
-    const data = await encryptData({
-      from_airport: "iata VALUE",
-      to_airport: "iata VALUE",
-      departure_date: "YYYY-MM-DD",
-      return_date: "YYYY-MM-DD",
-      adults: "",
-      childs: "",
-      infants: "",
-      class_type: "",
-      travel_type: "oneway",
-      user_id: 0,
-    });
+  const getFilghts = async (_tempData) => {
+    const data = await encryptData(_tempData);
 
     let response;
     try {
@@ -315,17 +257,57 @@ function DrawerAppBar(props) {
       );
     } catch (error) {
       console.log("Error", error);
+    } finally {
+      console.log("Flights", response?.data?.response_data);
+      let decryptedData = await decryptData(response?.data?.response_data);
+      decryptedData = JSON.parse(decryptedData);
+      console.log("Decrypted Flights", decryptedData);
+      dispatch(storeFlights(decryptedData));
+      router.push("/flight/list");
     }
   };
 
+  function findIATAbyName(airportName, updater) {
+    const matchedAirport = airports.find(
+      (airport) => airport.name === airportName
+    );
+
+    if (matchedAirport) {
+      updater(matchedAirport?.iata);
+      return matchedAirport.iata;
+    } else {
+      updater(null);
+      return "IATA code not found for the given airport name";
+    }
+  }
+
   React.useEffect(() => {
-    getAirportsList();
+    // getAirportsList();
     // getFilghts()
   }, []);
 
-  if (loading) {
-    return <h1>Loading</h1>;
-  }
+  // if (loading) {
+  //   return <h1>Loading</h1>;
+  // }
+
+  const handleSubmit = async () => {
+    let _dt = new Date(startDate);
+    let _temp = JSON.stringify({
+      from_airport: iataFrom,
+      to_airport: iataTo,
+      departure_date:
+        _dt.getFullYear() + "-" + (_dt.getMonth() + 1) + "-" + _dt.getDate(),
+      return_date: "",
+      adults: travellersCount?.adult,
+      childs: travellersCount?.child,
+      infants: travellersCount?.infant,
+      class_type: preferred,
+      travel_type: "oneway",
+      user_id: 0,
+    });
+    // console.log(_temp);
+    await getFilghts(_temp);
+  };
 
   return (
     <ProtectedRoute>
@@ -423,10 +405,11 @@ function DrawerAppBar(props) {
                           height: 20,
                           width: 20,
                           display: "flex",
+                          color: "#fff",
                         }}
                       />
                       <Typography
-                        style={{ display: "flex" }}
+                        style={{ display: "flex", color: "#fff" }}
                         variant="subtitle3"
                       >
                         One Way
@@ -491,7 +474,7 @@ function DrawerAppBar(props) {
                         freeSolo
                         id="free-solo-2-demo"
                         disableClearable
-                        options={top100Films.map((option) => option.title)}
+                        options={airports.map((option) => option.name)}
                         renderInput={(params) => (
                           <TextField
                             style={{
@@ -506,9 +489,10 @@ function DrawerAppBar(props) {
                             }}
                           />
                         )}
-                        onSelect={(event) =>
-                          console.log("selected", event.target.value)
-                        }
+                        onSelect={(event) => {
+                          // console.log("selected", event.target.value  )
+                          findIATAbyName(event.target.value, setIATAFrom);
+                        }}
                       />
                       {/* <PersonIcon style={{ marginRight: 8 }} /> */}
                       {/* <Typography variant="subtitle3">
@@ -547,7 +531,7 @@ function DrawerAppBar(props) {
                         freeSolo
                         id="free-solo-2-demo"
                         disableClearable
-                        options={top100Films.map((option) => option.title)}
+                        options={airports.map((option) => option.name)}
                         renderInput={(params) => (
                           <TextField
                             style={{
@@ -563,7 +547,8 @@ function DrawerAppBar(props) {
                           />
                         )}
                         onSelect={(event) =>
-                          console.log("selected", event.target.value)
+                          // console.log("selected", event.target.value)
+                          findIATAbyName(event.target.value, setIATATo)
                         }
                       />
                       {/* <PersonIcon style={{ marginRight: 8 }} /> */}
@@ -582,11 +567,16 @@ function DrawerAppBar(props) {
                         alignItems: "center",
                       }}
                     >
-                      <PersonIcon style={{ marginRight: 8 }} />
-                      <Typography variant="subtitle3">
-                        1 Adults . 0 Child . 0 Infant
-                      </Typography>
-                      <ExpandMoreIcon style={{ marginLeft: 8 }} />
+                      <DateTimePickerValue
+                        startDate={startDate}
+                        setStartDate={setStartDate}
+                      />
+                      {/* <Typography variant="subtitle3">{depDate}</Typography> */}
+                      {/* <EventAvailableIcon /> */}
+                      {/* <DatePicker
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
+                      /> */}
                     </Item>
                   </Grid>
                   <Grid item xs={12} sm={4} lg={4}>
@@ -825,11 +815,23 @@ function DrawerAppBar(props) {
                         alignItems: "center",
                       }}
                     >
-                      <PersonIcon style={{ marginRight: 8 }} />
-                      <Typography variant="subtitle3">
-                        1 Adults . 0 Child . 0 Infant
-                      </Typography>
-                      <ExpandMoreIcon style={{ marginLeft: 8 }} />
+                      <FormControl>
+                        <Select
+                          style={{ width: 300 }}
+                          labelId="demo-simple-select-autowidth-label"
+                          id="demo-simple-select-autowidth"
+                          value={preferred}
+                          onChange={handleChange}
+                          autoWidth
+                        >
+                          <MenuItem value={"ECONOMY"}>ECONOMY</MenuItem>
+                          <MenuItem value={"PREMIUM_ECONOMY"}>
+                            PREMIUM_ECONOMY
+                          </MenuItem>
+                          <MenuItem value={"BUSINESS"}>BUSINESS</MenuItem>
+                          <MenuItem value={"FIRST"}>FIRST</MenuItem>
+                        </Select>
+                      </FormControl>
                     </Item>
                   </Grid>
                 </Grid>
@@ -847,6 +849,7 @@ function DrawerAppBar(props) {
                 size="small"
                 variant="contained"
                 style={{ display: "flex" }}
+                onClick={handleSubmit}
               >
                 Submit
               </Button>
