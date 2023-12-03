@@ -5,11 +5,13 @@ const flightSlice = createSlice({
   name: "flights",
   initialState: {
     flight: null,
+    bookingReq: null,
   },
   reducers: {
     storeFlights: (state, action) => {
       console.log("sebkjser", state, action.payload);
-      state.flight = action.payload;
+      state.flight = action.payload.decryptedData;
+      state.bookingReq = action.payload?._tempData;
     },
     removeFlights: (state) => {
       state.flight = null;

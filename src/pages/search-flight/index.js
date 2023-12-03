@@ -238,7 +238,7 @@ function DrawerAppBar(props) {
   };
 
   const getFilghts = async (_tempData) => {
-    const data = await encryptData(_tempData);
+    const data = await encryptData(JSON.stringify(_tempData));
 
     let response;
     try {
@@ -262,7 +262,7 @@ function DrawerAppBar(props) {
       let decryptedData = await decryptData(response?.data?.response_data);
       decryptedData = JSON.parse(decryptedData);
       console.log("Decrypted Flights", decryptedData);
-      dispatch(storeFlights(decryptedData));
+      dispatch(storeFlights({ decryptedData, _tempData }));
       router.push("/flight/list");
     }
   };
@@ -292,11 +292,15 @@ function DrawerAppBar(props) {
 
   const handleSubmit = async () => {
     let _dt = new Date(startDate);
-    let _temp = JSON.stringify({
+    let _temp = {
       from_airport: iataFrom,
       to_airport: iataTo,
       departure_date:
-        _dt.getFullYear() + "-" + (_dt.getMonth() + 1) + "-" + _dt.getDate(),
+        _dt.getFullYear() +
+        "-" +
+        (_dt.getMonth() + 1) +
+        "-" +
+        (_dt.getDate() < 10 ? "0" + _dt.getDate() : _dt.getDate()),
       return_date: "",
       adults: travellersCount?.adult,
       childs: travellersCount?.child,
@@ -304,7 +308,7 @@ function DrawerAppBar(props) {
       class_type: preferred,
       travel_type: "oneway",
       user_id: 0,
-    });
+    };
     // console.log(_temp);
     await getFilghts(_temp);
   };

@@ -1,13 +1,13 @@
 "use client";
 
 import React from "react";
-import ProtectedRoute from "../ProtectedRoute";
+// import ProtectedRoute from "../ProtectedRoute";
 
 function index() {
   return (
-    <ProtectedRoute>
-      <div>Dashboard</div>
-    </ProtectedRoute>
+    // <ProtectedRoute>
+    <div>Dashboard</div>
+    // </ProtectedRoute>
   );
 }
 

@@ -9,8 +9,10 @@ const ProtectedRoute = ({ children }) => {
   const router = useRouter();
 
   if (!isAuthenticated) {
-    router.replace("/login");
-    console.log("route to login");
+    setTimeout(() => {
+      router.replace("/login");
+      console.log("route to login");
+    }, 2000);
     return null;
   }
 
