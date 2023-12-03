@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
-// import ProtectedRoute from "../components/ProtectedRoute";
+import { useDispatch, useSelector } from "react-redux";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -15,6 +15,7 @@ import Paper from "@mui/material/Paper";
 
 import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
 import { Divider } from "@mui/material";
+import { storeCarts } from "@/redux/reducers/cartSlice";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -26,6 +27,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 function list() {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { flight, bookingReq } = useSelector((state) => state.flight);
   const user = useSelector((state) => state.user);
@@ -55,6 +57,7 @@ function list() {
                   display: "flex",
                   alignSelf: "center",
                   flexDirection: "column",
+                  marginBottom: 24,
                 }}
               >
                 <CardContent
@@ -132,58 +135,31 @@ function list() {
                   style={{
                     display: "flex",
                     width: "100%",
-                    marginTop: 24,
                   }}
                 >
-                  <Box sx={{ flexGrow: 1, display: "flex" }}>
+                  <Box
+                    sx={{
+                      flexGrow: 1,
+                      display: "flex",
+                      // flexDirection: "row",
+                    }}
+                  >
                     <Grid
                       container
                       spacing={2}
                       style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                        // display: "flex",
+                        // justifyContent: "space-between",
+                        alignItems: "row",
                       }}
                     >
-                      <Grid
-                        item
-                        xs={12}
-                        sm={12}
-                        lg={12}
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                        }}
-                      >
+                      <Grid item xs={12} sm={12} lg={12}>
                         <Typography variant="subtitle2">
                           {bookingReq?.class_type}
                         </Typography>
                       </Grid>
-                    </Grid>
-                  </Box>
-                  <Divider />
 
-                  <Box key={index} sx={{ flexGrow: 1, display: "flex" }}>
-                    <Grid
-                      container
-                      spacing={2}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Grid
-                        item
-                        xs={12}
-                        sm={2}
-                        lg={2}
-                        style={{
-                          display: "flex",
-                          justifyContent: "flex-start",
-                        }}
-                      >
+                      <Grid item xs={12} sm={2} lg={2}>
                         <img
                           src={item?.flightitineraries[0].airline_logo}
                           alt="#NA"
@@ -193,31 +169,80 @@ function list() {
                       <Grid
                         item
                         xs={12}
-                        sm={4}
-                        lg={4}
+                        sm={2}
+                        lg={2}
                         style={{
-                          display: "flex",
                           justifyContent: "center",
-                          flexDirection: "column",
+                          alignItems: "center",
                         }}
                       >
                         <Typography variant="subtitle2">
-                          {
-                            item?.flightitineraries[0]?.arrival_at?.slice(
-                              " "
-                            )[1]
-                          }
+                          {item?.flightitineraries[0].arrival_time}
                         </Typography>
                         <Typography variant="subtitle2">
-                          {item?.flightitineraries[0]?.arrival_iata}
+                          {item?.flightitineraries[0].arrival_code}
                         </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={12}
+                        sm={4}
+                        lg={4}
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <TrendingFlatIcon />
+                        <Typography
+                          variant="subtitle2"
+                          style={{ justifyContent: "space-around" }}
+                        >
+                          {item?.flightitineraries[0]?.duration_text}
+                          {" | "}
+                          {item?.flightitineraries[0]?.stoppage_text}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={12}
+                        sm={2}
+                        lg={2}
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography variant="subtitle2">
+                          {item?.flightitineraries[0].departure_time}
+                        </Typography>
+                        <Typography variant="subtitle2">
+                          {item?.flightitineraries[0].departure_code}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={12}
+                        sm={2}
+                        lg={2}
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography variant="subtitle2">
+                          {item?.price}
+                        </Typography>
+                        <Button
+                          onClick={() => dispatch(storeCarts(item))}
+                          variant="contained"
+                        >
+                          Select
+                        </Button>
                       </Grid>
                     </Grid>
                   </Box>
                 </CardContent>
-                {/* <CardActions>
-          <Button size="small">Learn More</Button>
-        </CardActions> */}
               </Card>
             </>
           );

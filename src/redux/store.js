@@ -6,6 +6,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import exampleSlice from "./reducers/exaple-slice";
 import userSlice from "./reducers/userSlice";
 import flightSlice from "./reducers/flightSlice";
+import cartSlice from "./reducers/cartSlice";
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     example: exampleSlice,
     user: userSlice,
     flight: flightSlice,
+    carts: cartSlice,
   },
 });
 

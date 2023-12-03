@@ -106,7 +106,6 @@ function DateTimePickerValue({ startDate, setStartDate }) {
         <DatePicker
           value={startDate}
           onChange={(newValue) => {
-            console.log(newValue);
             setStartDate(newValue);
           }}
         />
@@ -114,7 +113,6 @@ function DateTimePickerValue({ startDate, setStartDate }) {
     </LocalizationProvider>
   );
 }
-// console.log(airports);
 
 const drawerWidth = 240;
 const navItems = ["Cart", "Log out"];
@@ -131,7 +129,7 @@ function DrawerAppBar(props) {
   const { window } = props;
 
   const user = useSelector((state) => state.user);
-  console.log(user);
+  const carts = useSelector((state) => state.carts);
 
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -172,7 +170,7 @@ function DrawerAppBar(props) {
       dispatch(logout());
       router.replace("/login");
     } else if (item === "Cart") {
-      alert(item);
+      console.log("\n\nAll Carts: \n\n", carts);
     }
   };
 
@@ -207,7 +205,6 @@ function DrawerAppBar(props) {
     let encryptedData = await encryptData({
       search_key: "Indira Gandhi International Airport",
     });
-    console.log("encryped", encryptedData);
 
     try {
       const airportURL =
@@ -225,14 +222,11 @@ function DrawerAppBar(props) {
         }
       );
     } catch (error) {
-      console.log("\nError occured", error);
     } finally {
-      console.log("air response", response);
       let decryptedData = await decryptData(response?.data?.response_data);
       // let temp = await decryptData(response?.request?.response);
 
       decryptedData = JSON.parse(decryptedData);
-      console.log("airports", decryptedData);
       setLoading(false);
     }
   };
@@ -256,12 +250,9 @@ function DrawerAppBar(props) {
         }
       );
     } catch (error) {
-      console.log("Error", error);
     } finally {
-      console.log("Flights", response?.data?.response_data);
       let decryptedData = await decryptData(response?.data?.response_data);
       decryptedData = JSON.parse(decryptedData);
-      console.log("Decrypted Flights", decryptedData);
       dispatch(storeFlights({ decryptedData, _tempData }));
       router.push("/flight/list");
     }
@@ -309,7 +300,6 @@ function DrawerAppBar(props) {
       travel_type: "oneway",
       user_id: 0,
     };
-    // console.log(_temp);
     await getFilghts(_temp);
   };
 
@@ -494,7 +484,6 @@ function DrawerAppBar(props) {
                           />
                         )}
                         onSelect={(event) => {
-                          // console.log("selected", event.target.value  )
                           findIATAbyName(event.target.value, setIATAFrom);
                         }}
                       />
@@ -551,7 +540,6 @@ function DrawerAppBar(props) {
                           />
                         )}
                         onSelect={(event) =>
-                          // console.log("selected", event.target.value)
                           findIATAbyName(event.target.value, setIATATo)
                         }
                       />
